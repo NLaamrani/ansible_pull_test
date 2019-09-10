@@ -80,15 +80,17 @@
     service:
       name: apache2
       state: restarted
-
+    become: yes
 
   - name: install hellow world php script
     copy:
       src: db.php
       dest: /var/www/html/
       mode: 0664
+    become: yes
 
   - name: Restart Apache
     service:
       name: apache2
       state: restarted
+    become: yes

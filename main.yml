@@ -1,0 +1,89 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Install apache
+    apt:
+      name: apache2
+      state: present
+
+  - name: install php module for apache
+    apt:
+      name: libapache2-mod-php
+      state: present
+
+  - name: start Apache
+    service:
+      name: apache2
+      state: running
+      enabled: yes
+
+  - name: install hello world php
+    copy:
+      src: index.php
+      dest: /var/www/html/
+      mode: 0664
+
+
+
+
+
+  - name: Install mariadb
+    apt:
+      name: mariadb-server
+      state: present
+
+  - name: Start mysql service
+    service:
+      name: mysql
+      state: started
+      enabled: true
+
+  - name: Install python Mysql
+    apt:
+      name: python-mysqldb
+      state: present
+
+  - name: Create new db
+    mysql_db:
+      name: demo
+      state: present
+      collation: utf8_general_ci
+
+  - name: Create new db user
+    mysql_user:
+      name: demo
+      password: demo
+      priv: '*.*:ALL'
+      host: localhost
+      state: present
+
+  - name: Copy sample data
+    copy:
+      src: dump.sql
+      dest: /tmp/dump.sql
+
+  - name: insert sample data
+    shell: cat /tmp/dump.sql | mysql -u demo -pdemo demo
+
+  - name: Install Mysql extension for PHP
+    apt:
+      name: php-mysql
+      state: present
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted
+
+
+  - name: install hellow world php script
+    copy:
+      src: db.php
+      dest: /var/www/html/
+      mode: 0664
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted
